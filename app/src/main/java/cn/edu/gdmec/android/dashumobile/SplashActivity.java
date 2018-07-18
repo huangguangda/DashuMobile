@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 public class SplashActivity extends AppCompatActivity {
-
     private TextView mTvVersion;
     private String mVersion;
     @Override
