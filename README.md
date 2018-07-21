@@ -263,6 +263,8 @@ activity_splash.xml的创建：
 
 展示虚拟机运行效果图：[效果图](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180718213151.png)
 
+## 启动界面线程的handler处理
+
 
 
 
