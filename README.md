@@ -1,6 +1,10 @@
 # DashuMobile
 达叔与他的朋友们【手机安全卫士项目】
 
+## Github 欢迎 Star、Fork
+
+### 如果喜欢，那就点个赞吧！❤️ 
+
 ## 手机安全卫士项目
 
 ### 一，项目结构
@@ -10,7 +14,7 @@
 
 ## 【自动升级代码】
 
-首先先去下载Code tree for GitHub插件，它能帮助你更好地查看项目结构与分支下载功能。
+首先先去下载Code tree for GitHub插件，它能帮助你更好地查看项目结构与分支下载功能。**图片资源也是用插件帮忙下载，如有不懂自行百度**
 来源
 Chrome 网上应用店
 
@@ -258,6 +262,8 @@ activity_splash.xml的创建：
 ```
 
 展示虚拟机运行效果图：[效果图](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180718213151.png)
+
+## 启动界面线程的handler处理
 
 
 
