@@ -1,4 +1,4 @@
-# DashuMobile
+# DashuMobile - [可参考另一版](https://github.com/huangguangda/MobileSafe)
 达叔与他的朋友们【手机安全卫士项目】
 
 ## Github 欢迎 Star、Fork
