@@ -6,7 +6,6 @@
 
     <TextView
         android:layout_marginTop="50dp"
-        android:layout_below="@+id/pb_splash_loading"
         android:text="欢迎来到主界面"
         android:layout_centerHorizontal="true"
         android:id="@+id/tv"

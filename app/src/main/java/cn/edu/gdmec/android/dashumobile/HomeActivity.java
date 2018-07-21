@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.widget.TextView;
 
 public class HomeActivity extends Activity {
-
     TextView textView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

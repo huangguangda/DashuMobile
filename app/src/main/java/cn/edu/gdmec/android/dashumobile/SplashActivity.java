@@ -1,11 +1,9 @@
 package cn.edu.gdmec.android.dashumobile;
 
-
 import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
 import android.widget.TextView;
 
 public class SplashActivity extends Activity {
@@ -46,9 +44,9 @@ public class SplashActivity extends Activity {
         tv_version_name.setText(getVersionName());
     }
     /*
-        * 获取版本名称：清单文件中
-        * @return 应用版本名称 放回null代表异常
-        * */
+     * 获取版本名称：清单文件中
+     * @return 应用版本名称 放回null代表异常
+     * */
     public String getVersionName() {
         //1.包管理者对象packageManager
         PackageManager pm = getPackageManager();
