@@ -1,4 +1,4 @@
-package cn.edu.gdmec.android.dashumobile;
+package cn.edu.gdmec.android.dashumobile.m1home.entity;
 
 /**
  * Created by 达叔小生 on 2018/7/18.

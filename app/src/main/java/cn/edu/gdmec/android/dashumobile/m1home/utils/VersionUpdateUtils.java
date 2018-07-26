@@ -1,4 +1,4 @@
-package cn.edu.gdmec.android.dashumobile;
+package cn.edu.gdmec.android.dashumobile.m1home.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,6 +20,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
+import cn.edu.gdmec.android.dashumobile.m1home.HomeActivity;
+import cn.edu.gdmec.android.dashumobile.R;
+import cn.edu.gdmec.android.dashumobile.m1home.entity.VersionEntity;
 
 /**
  * Created by 达叔小生 on 2018/7/18.

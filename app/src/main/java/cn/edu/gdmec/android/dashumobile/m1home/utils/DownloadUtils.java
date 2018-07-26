@@ -1,4 +1,4 @@
-package cn.edu.gdmec.android.dashumobile;
+package cn.edu.gdmec.android.dashumobile.m1home.utils;
 
 import android.app.DownloadManager;
 import android.content.Context;

@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import cn.edu.gdmec.android.dashumobile.m1home.utils.VersionUpdateUtils;
+
 public class SplashActivity extends Activity {
     private TextView tv_version_name;
     private int mLocalVersionCode;
