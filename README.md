@@ -265,7 +265,7 @@ activity_splash.xml的创建：
 
 ## 启动界面线程的handler处理
 
-[包结构](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721094703.png)
+![包结构](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721094703.png)
 
 #### DownloadUtils
 
@@ -549,7 +549,7 @@ public class VersionUpdateUtils {
 </RelativeLayout>
 ```
 
-展示[启动页](images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ截图20180721095811.png) [主界面](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721100110.png)
+展示[启动页](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721095811.png) [主界面](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721100110.png)
 
 ##
 
