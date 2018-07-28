@@ -551,15 +551,181 @@ public class VersionUpdateUtils {
 
 展示[启动页](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721095811.png) [主界面](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721100110.png)
 
-##
+## 第二期：主界面实现
 
+写介绍目录结构：
+app下
+```
+manifests
+java
+ m1home
+  adapter
+   HomeAdapter
+  entity
+   VersionEntity
+  utity
+   DownloadUtils
+   MyUtils
+   VerstionUpdateUtils
+  HomeActivity
+ SplashActivity
+ ```
+ 
+ 可自行用插件查看结构目录：
+ 
+ 主界面布局 activity_home.xml
+ ```
+ <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/bg_home">
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:scaleType="fitXY"
+            android:background="@drawable/superman"
+            android:layout_width="100dp"
+            android:layout_height="107dp" />
+        <TextView
+            android:typeface="normal"
+            android:textScaleX="1.1"
+            android:textColor="#90000000"
+            android:text="主人，我是你的手机小护卫"
+            android:textSize="16sp"
+            android:id="@+id/tv_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <GridView
+            android:numColumns="3"
+            android:verticalSpacing="10dp"
+            android:horizontalSpacing="10dp"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:id="@+id/gv_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+        </GridView>
+    </RelativeLayout>
+</LinearLayout>
+ ```
+ 
+item_home.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+    <ImageView
+        android:background="@drawable/atools"
+        android:id="@+id/iv_home"
+        android:layout_width="80dp"
+        android:layout_height="80dp" />
+    <TextView
+        android:id="@+id/tv_home"
+        android:textSize="18sp"
+        android:textColor="#80000000"
+        android:text="高级工具"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+```
 
+在m1home下创建adapter包，在adapter包下创建HomeAdapter类
+   
+```
 
+public class HomeAdapter extends BaseAdapter{
+    int[] imageId = {R.drawable.safe,R.drawable.callmsgsafe,R.drawable.app,R.drawable.trojan,R.drawable.sysoptimize,R.drawable.taskmanager,R.drawable.netmanager,R.drawable.atools,R.drawable.settings};
+    String[] names = {"手机防盗","通讯卫士","软件管家","手机杀毒","缓存清理","进程管理","流量统计","高级工具","设置中心"};
+    private Context context;
 
+    public HomeAdapter(Context context){
+        this.context=context;
+    }
+    @Override
+    public int getCount() {
+        return 9;
+    }
 
+    @Override
+    public Object getItem(int position) {
+        return null;
+    }
 
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view1 = View.inflate(context,R.layout.item_home,null);
+        ImageView iv_icon = view1.findViewById(R.id.iv_home);
+        TextView tv_name = view1.findViewById(R.id.tv_home);
+        iv_icon.setImageResource(imageId[position]);
+        tv_name.setText(names[position]);
+        return view1;
+    }
+}
+```
+
+HomeActivity.java
+
+```
+public class HomeActivity extends Activity {
+    private GridView gv_home;
+    private long mExitTime;
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        //getSupportActionBar().hide();
+        gv_home = (GridView) findViewById(R.id.gv_home);
+        gv_home.setAdapter(new HomeAdapter(HomeActivity.this));
+        gv_home.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            if ((System.currentTimeMillis()-mExitTime)<2000){
+                System.exit(0);
+            }else {
+                Toast.makeText(this,"再按一次退出程序",Toast.LENGTH_LONG).show();
+                mExitTime = System.currentTimeMillis();
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+
+}
+```
+
+主界面实现效果成功~
 
 
 
