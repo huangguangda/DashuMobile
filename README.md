@@ -726,6 +726,7 @@ public class HomeActivity extends Activity {
 ```
 
 主界面实现效果成功~
+![效果](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180727035153.png)
 
 
 
