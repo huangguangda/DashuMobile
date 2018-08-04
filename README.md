@@ -551,16 +551,656 @@ public class VersionUpdateUtils {
 
 展示[启动页](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721095811.png) [主界面](http://images.cnblogs.com/cnblogs_com/dashucoding/1247529/o_QQ%E6%88%AA%E5%9B%BE20180721100110.png)
 
-##
+## 第二期：主界面实现
+
+写介绍目录结构：
+app下
+```
+manifests
+java
+ m1home
+  adapter
+   HomeAdapter
+  entity
+   VersionEntity
+  utity
+   DownloadUtils
+   MyUtils
+   VerstionUpdateUtils
+  HomeActivity
+ SplashActivity
+ ```
+ 
+ 可自行用插件查看结构目录：
+ 
+ 主界面布局 activity_home.xml
+ ```
+ <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/bg_home">
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:scaleType="fitXY"
+            android:background="@drawable/superman"
+            android:layout_width="100dp"
+            android:layout_height="107dp" />
+        <TextView
+            android:typeface="normal"
+            android:textScaleX="1.1"
+            android:textColor="#90000000"
+            android:text="主人，我是你的手机小护卫"
+            android:textSize="16sp"
+            android:id="@+id/tv_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <GridView
+            android:numColumns="3"
+            android:verticalSpacing="10dp"
+            android:horizontalSpacing="10dp"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:id="@+id/gv_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </GridView>
+    </RelativeLayout>
+</LinearLayout>
+ ```
+ 
+item_home.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+    <ImageView
+        android:background="@drawable/atools"
+        android:id="@+id/iv_home"
+        android:layout_width="80dp"
+        android:layout_height="80dp" />
+    <TextView
+        android:id="@+id/tv_home"
+        android:textSize="18sp"
+        android:textColor="#80000000"
+        android:text="高级工具"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+```
+
+在m1home下创建adapter包，在adapter包下创建HomeAdapter类
+   
+```
+
+public class HomeAdapter extends BaseAdapter{
+    int[] imageId = {R.drawable.safe,R.drawable.callmsgsafe,R.drawable.app,R.drawable.trojan,R.drawable.sysoptimize,R.drawable.taskmanager,R.drawable.netmanager,R.drawable.atools,R.drawable.settings};
+    String[] names = {"手机防盗","通讯卫士","软件管家","手机杀毒","缓存清理","进程管理","流量统计","高级工具","设置中心"};
+    private Context context;
+
+    public HomeAdapter(Context context){
+        this.context=context;
+    }
+    @Override
+    public int getCount() {
+        return 9;
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return null;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view1 = View.inflate(context,R.layout.item_home,null);
+        ImageView iv_icon = view1.findViewById(R.id.iv_home);
+        TextView tv_name = view1.findViewById(R.id.tv_home);
+        iv_icon.setImageResource(imageId[position]);
+        tv_name.setText(names[position]);
+        return view1;
+    }
+}
+```
+
+HomeActivity.java
+
+```
+public class HomeActivity extends Activity {
+    private GridView gv_home;
+    private long mExitTime;
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        //getSupportActionBar().hide();
+        gv_home = (GridView) findViewById(R.id.gv_home);
+        gv_home.setAdapter(new HomeAdapter(HomeActivity.this));
+        gv_home.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            if ((System.currentTimeMillis()-mExitTime)<2000){
+                System.exit(0);
+            }else {
+                Toast.makeText(this,"再按一次退出程序",Toast.LENGTH_LONG).show();
+                mExitTime = System.currentTimeMillis();
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+
+}
+```
+
+主界面实现效果成功~
+![效果](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180727035153.png)
+
+## 手机防盗-设置及输入密码
+
+设计思路：
+在主界面点击『手机防盗』图标，判断是否记录了密码，如果记录就弹出输入密码对话框，否则弹出设置密码对话框，
+
+输入密码对话框，读取密码，判断密码输入的是否与保存密码一致
+
+设置密码对话框，判断非空，判断一致，长度要求，密码规则，保存密码
+
+1.自定义圆角百背景的形状的drawable，drawable鼠标右键，new-drawable resource file ,coner_bg_white.xml
+2.自定义对话框的style,在文件res/values/styles.xml 添加
+3.自定义输入密码对话框和设置密码对话框，继承于对话框，加上密码的输入项
+  1）新建布局文件setup_password_dialog.xml inter_password_dialog.xml
+  2）创建密码输入框的dialog类
 
 
+4.HomeActivity.java
+  1）创建SharedPerefrence。
+	2)创建方法：isSetUpPasword()  getPassword() savePassword()
 
+## 项目结构中新增的文件
 
+![效果](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804200223.png)
+![效果](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804200256.png)
 
+coner_bg_white.xml
 
+```
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+ <corners
+     android:radius="6.0dp"/>
+    <solid android:color="#ffffff"/>
+</selector>
+```
+values/styles.xml
+```
+...
+<style name="dialog_custom" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">#00000000</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+</resources>
+```
+setup_password_dialog.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="260dp"
+    android:layout_height="220dp"
+    android:minHeight="150dp"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:background="@drawable/coner_bg_white">
+    <TextView
+        android:id="@+id/tv_setuppwd_title"
+        android:padding="8dp"
+        android:layout_margin="5dp"
+        android:textColor="#1ABDE6"
+        android:text="设置密码"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_marginBottom="10dp"
+        android:background="#1ABDE6"
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"/>
+    <EditText
+        android:id="@+id/et_firstpwd"
+        android:layout_margin="5dp"
+        android:inputType="textPassword"
+        android:hint="请输入密码"
+        android:background="@drawable/edit_normal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+    <EditText
+        android:id="@+id/et_affirm_password"
+        android:layout_margin="5dp"
+        android:inputType="textPassword"
+        android:hint="请再次输入密码"
+        android:background="@drawable/edit_normal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+    <View
+        android:background="#1ABDE6"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="1.0px"/>
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_weight="1"
+            android:text="确认"
+            android:background="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <View
+            android:background="#1ABDE6"
+            android:layout_width="1.0px"
+            android:layout_height="match_parent"/>
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_weight="1"
+            android:text="取消"
+            android:background="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
+```
+inter_password_dialog.xml
 
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="260dp"
+    android:layout_height="170dp"
+    android:minHeight="150dp"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:background="@drawable/coner_bg_white">
+    <TextView
+        android:id="@+id/tv_interpwd_title"
+        android:padding="8dp"
+        android:layout_margin="5dp"
+        android:textColor="#1ABDE6"
+        android:text="输入密码"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:background="#1ABDE6"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="1.5px"/>
+    <EditText
+        android:id="@+id/et_inter_password"
+        android:layout_margin="5dp"
+        android:inputType="textPassword"
+        android:hint="请输入密码"
+        android:background="@drawable/edit_normal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+    <View
+        android:layout_marginTop="10dp"
+        android:background="#1ABDE6"
+        android:layout_width="match_parent"
+        android:layout_height="1.0px"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/btn_comfirm"
+            android:layout_weight="1"
+            android:text="确认"
+            android:background="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <View
+            android:background="#1ABDE6"
+            android:layout_width="1.0px"
+            android:layout_height="match_parent"/>
+        <Button
+            android:id="@+id/btn_dismiss"
+            android:layout_weight="1"
+            android:text="取消"
+            android:background="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
+```
+MD5Utils.java
+```
+public class MD5Utils {
+    public static String encode(String text) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("md5");
+            byte[] result = digest.digest(text.getBytes());
+            StringBuilder sb = new StringBuilder();
 
+            for (byte b : result) {
+                int number = b & 0xff;
+                String hex = Integer.toHexString(number);
 
+                if (hex.length() == 1) {
+                    sb.append("0" + hex);
+                } else {
+                    sb.append(hex);
+                }
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+}
+```
+setUpPassWordDialog.java
+```
+public class SetUpPasswordDialog extends Dialog implements View.OnClickListener{
+    //标题栏
+    private TextView mTitleTV;
+    //首次输入密码文本框
+    public EditText mFirstPWDET;
+    //确认密码文本框
+    public EditText mAffirmET;
+    //回调接口
+    private MyCallBack myCallBack;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        setContentView(R.layout.setup_password_dialog);
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    private void initView() {
+        mTitleTV = findViewById(R.id.tv_setuppwd_title);
+        mFirstPWDET = findViewById(R.id.et_firstpwd);
+        mAffirmET = findViewById(R.id.et_affirm_password);
+        findViewById(R.id.btn_ok).setOnClickListener(this);
+        findViewById(R.id.btn_cancel).setOnClickListener(this);
+    }
+
+    public void setTitle(String title){
+        if(!TextUtils.isEmpty(title)){
+            mTitleTV.setText(title);
+        }
+    }
+
+    public void setCallBack(MyCallBack myCallBack){
+        this.myCallBack = myCallBack;
+    }
+    public SetUpPasswordDialog(Context context){
+        super(context,R.style.dialog_custom);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_ok:
+                System.out.print("SetupPasswordDialog");
+                myCallBack.ok();
+                break;
+            case R.id.btn_cancel:
+                myCallBack.cancel();
+                break;
+        }
+    }
+    public interface MyCallBack{
+        void ok();
+        void cancel();
+    }
+}
+```
+InterPasswordDialog.java
+```
+public class InterPasswordDialog extends Dialog implements View.OnClickListener{
+    //对话框标题
+    private TextView mTitleTV;
+    //输入密码文本框
+    private EditText mInterET;
+    //确认按钮
+    private Button mOKBtn;
+    //取消按钮
+    private Button mCancleBtn;
+    //回调接口
+    private MyCallBack myCallBack;
+    private Context context;
+    public InterPasswordDialog(Context context){
+        super(context, R.style.dialog_custom);
+        this.context = context;
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        setContentView(R.layout.inter_password_dialog);
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+    private void initView(){
+        mTitleTV = findViewById(R.id.tv_interpwd_title);
+        mInterET = findViewById(R.id.et_inter_password);
+        mOKBtn = findViewById(R.id.btn_comfirm);
+        mCancleBtn = findViewById(R.id.btn_dismiss);
+        mOKBtn.setOnClickListener(this);
+        mCancleBtn.setOnClickListener(this);
+    }
+    public void setTitle(String title){
+        if (!TextUtils.isEmpty(title)){
+            mTitleTV.setText(title);
+        }
+    }
+    @Override
+    public void onClick(View view){
+        switch (view.getId()){
+            case R.id.btn_comfirm:
+                myCallBack.confirm();
+                break;
+            case R.id.btn_dismiss:
+                myCallBack.cancle();
+                break;
+        }
+    }
+    public String getPassword(){
+        return mInterET.getText().toString();
+    }
+    public void setCallBack(MyCallBack myCallBack){
+        this.myCallBack = myCallBack;
+    }
+    public interface MyCallBack{
+        void confirm();
+        void cancle();
+    }
+}
+```
+HomeActivity.java
+```
+public class HomeActivity extends Activity {
+    private GridView gv_home;
+    private long mExitTime;
+    //存储手机防盗密码
+    private SharedPreferences msharedPreferences;
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        //getSupportActionBar().hide();
+        msharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
+        gv_home = (GridView) findViewById(R.id.gv_home);
+        gv_home.setAdapter(new HomeAdapter(HomeActivity.this));
+        gv_home.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0://点击手机防盗d
+                        if (isSetUpPassword()){
+                         //弹出输入密码对话框
+                            showInterPswdDialog();
+                        }else {
+                            //弹出设置密码对话框
+                            showSetUpPswdDialog();
+                        }
+                        break;
+                }
+            }
+        });
+    }
+    public void startActivity(Class<?> cls){
+        Intent intent = new Intent(HomeActivity.this,cls);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            if ((System.currentTimeMillis()-mExitTime)<2000){
+                System.exit(0);
+            }else {
+                Toast.makeText(this,"再按一次退出程序",Toast.LENGTH_LONG).show();
+                mExitTime = System.currentTimeMillis();
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+    //弹出设置密码对话框，本方法需要完成"手机防盗模块"之后才能启用
+    private void showSetUpPswdDialog(){
+        final SetUpPasswordDialog setUpPasswrodDialog = new SetUpPasswordDialog ( HomeActivity.this );
+        setUpPasswrodDialog.setCallBack ( new SetUpPasswordDialog.MyCallBack (){
+            @Override
+            public void ok(){
+                String firstPwsd = setUpPasswrodDialog.mFirstPWDET.getText ().toString ().trim ();
+                String affirmPwsd = setUpPasswrodDialog.mAffirmET.getText ().toString ().trim ();
+                if (!TextUtils.isEmpty ( firstPwsd )&&!TextUtils.isEmpty ( affirmPwsd )){
+                    if (firstPwsd.equals ( affirmPwsd )){
+                        // 两次密码一致,存储密码
+                        savePswd(affirmPwsd);
+                        setUpPasswrodDialog.dismiss ();
+                        // 显示输入密码对话框
+                        showInterPswdDialog();
+                    }else {
+                        Toast.makeText ( HomeActivity.this, "两次密码不一致！", Toast.LENGTH_LONG ).show();
+                    }
+                }else{
+                    Toast.makeText ( HomeActivity.this, "密码不能为空！", Toast.LENGTH_LONG ).show ();
+                }
+            }
+            @Override
+            public void cancel(){
+                setUpPasswrodDialog.dismiss ();
+            }
+        } );
+        setUpPasswrodDialog.setCancelable ( true );
+        setUpPasswrodDialog.show ();
+    }
+    // 弹出输入密码对话框   本方法需要完成"手机防盗模块"之后才能启用
+    private void showInterPswdDialog(){
+        final String password = getPassword();
+        final InterPasswordDialog mInPswdDialog = new InterPasswordDialog ( HomeActivity.this );
+        mInPswdDialog.setCallBack (new InterPasswordDialog.MyCallBack (){
+            @Override
+            public void confirm(){
+                if (TextUtils.isEmpty ( mInPswdDialog.getPassword () )){
+                    Toast.makeText ( HomeActivity.this, "密码不能为空！", Toast.LENGTH_LONG ).show ();
+                }else if (password.equals ( MD5Utils.encode ( mInPswdDialog.getPassword () ) )){
+                    // 进入防盗主界面
+                    mInPswdDialog.dismiss ();
+                    //startActivity ( LostFindActivity.class );
+                    Toast.makeText ( HomeActivity.this, "可以进入手机防盗模块",Toast.LENGTH_LONG ).show ();
+                }else {
+                    // 对话框消失，弹出
+                    mInPswdDialog.dismiss ();
+                    Toast.makeText ( HomeActivity.this, "密码有误，请重新输入", Toast.LENGTH_LONG ).show ();
+                }
+            }
+            @Override
+            public void cancle(){
+                mInPswdDialog.dismiss ();
+            }
+        });
+        mInPswdDialog.setCancelable ( true );
+        // 让对话框显示
+        mInPswdDialog.show ();
+    }
+
+    //保存密码 本方法需要完成“手机防盗模块”之后才能启用
+    private void savePswd(String affirmPwsd){
+        SharedPreferences.Editor edit = msharedPreferences.edit();
+        //为了防止用户隐私被泄漏，因此需要加密密码
+        edit.putString("PhoneAntiTheftPWD", MD5Utils.encode(affirmPwsd));
+        edit.commit();
+    }
+
+    //获取密码
+    private String getPassword(){
+        String password = msharedPreferences.getString("PhoneAntiTheftPWD",null);
+        if (TextUtils.isEmpty(password)){
+            return "";
+        }
+        return password;
+    }
+    //判断用户是否设置过手机防盗密码
+    private boolean isSetUpPassword(){
+        String password = msharedPreferences.getString("PhoneAntiTheftPWD",null);
+        if (TextUtils.isEmpty(password)){
+            return false;
+        }
+        return true;
+    }
+
+}
+```
+
+## 效果展示
+
+![1](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195724.png)
+![2](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195744.png)
+![3](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195803.png)
+![4](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195821.png)
+![5](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195834.png)
+![6](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195845.png)
 
 
