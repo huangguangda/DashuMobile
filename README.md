@@ -1203,4 +1203,1060 @@ public class HomeActivity extends Activity {
 ![5](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195834.png)
 ![6](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180804195845.png)
 
+## 手机防盗设置向导界面
 
+#### 项目结构截图
+
+![1](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805222209.png)
+![2](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805222255.png)
+![3](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805222336.png)
+
+#### 手机防盗界面第一部分框架和UI实现步骤
+
+#### 1.在m2theftgauard包下创建Empty Activity名称为LostFindActivity。
+
+1)准备图片：
+```
+swtch_btn_on.png
+switch_btn_off.png 
+arrow_right.png
+sim_alarm_icon_small.png
+```
+
+2)增加文字样式 ：style.xml 中增加 textview16sp
+
+3)增加颜色：color.xml 中增加 purple
+
+4)编写开关按钮的背景设置的xml文件（开关两个状态及背景图） drawable/toggle_btn_bg_selector.xml
+
+5)编写形状配置xml（紫色背景上边是圆角的矩形）  drawable/round_purple_tv_bg.xml  location_icon_small.png
+
+6)编写按钮标题栏布局 layout/titlebar.xml
+
+7)编写Activity的布局文件activity_lost_find.xml
+
+8)编写Activity.java
+
+#### 2.编写滑屏界面的指示点的布局文件layout/setup_radiogroup.xml
+
+1）图片：
+lock_screen_icon_small.png
+delete_data_small.png
+
+2)编写形状配置xml（紫色实心圆和白色实心圆） drawable/circle_purple.xml  drawable/circle_white.xml 
+
+3)编写滑屏指示点的背景设置xml（显示紫色或白色实心圆） drawable/circle_purple_bg_selector.xml
+
+4)编写滑屏界面的指示点的布局文件 layout/setup_radiogroup.xml
+
+#### 3.创建BaseSetupActivity，抽象类
+
+1)创建动画文件 pre_in.xml pre_out.xml next_in.xml next_out.xml
+
+2)编写逻辑代码处理手势动作
+
+#### 4.创建Setup1Activty父类是BaseSetupActivity
+
+1)图片:
+```
+add.png
+sim_alarm_icon.png
+location_icon.png
+lock_screen_icon.png
+delete_data.png
+```
+
+2)编写布局文件activity_setup_1.xml
+
+3)编写简单的逻辑代码
+
+#### 5.创建Setup2Activity父类是BaseSetupActivity
+
+1)图片
+recomand_icon.9.png
+
+2)编写sim卡绑定背景设置xml drawable/sim_bind_selector.xml
+
+3)编写布局文件activity_setup_2.xml
+
+4)编写简单逻辑代码
+
+#### 6．创建Setup3Activity父类是BaseSetupActivity
+
+1）图片
+coner_white_rec.png
+contact_et_left_icon.png
+
+2）编写布局文件activity_setup_3.xml
+
+3）编写简单的逻辑代码
+
+#### 7．创建Setup4Activity父类是BaseSetupActivity
+
+1）图片
+security_phone.png
+
+2）编写布局文件activity_setup_4.xml
+
+3）编写简单的逻辑代码
+
+#### 8.清单文件声明Activity
+
+## m1Home/HomeActivity.java   在showInterpswdDialog()方法中加上启动手
+
+```
+// 弹出输入密码对话框   本方法需要完成"手机防盗模块"之后才能启用
+    private void showInterPswdDialog(){
+        ...
+         // 进入防盗主界面
+         mInPswdDialog.dismiss ();
+         startActivity ( LostFindActivity.class );
+         Toast.makeText ( HomeActivity.this, "可以进入手机防盗模块",Toast.LENGTH_LONG ).show ();
+       }else {
+          ...
+    }
+```
+
+values/style.xml
+
+```
+...
+<!--手机防盗界面增加的-->
+    <style name="wrapcontent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <!--TextView 16sp-->
+    <style name="textview16sp" parent="wrapcontent">
+        <item name="android:textSize">16sp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+</resources>
+```
+
+values/color.xml
+
+```
+...
+<!--手机防盗模块需要用到的-->
+    <color name="purple">#5542B8</color>
+</resources>
+```
+
+drawable/toggle_btn_bg_selector.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/swtch_btn_on" android:state_checked="true"/>
+    <item android:drawable="@drawable/switch_btn_off" android:state_checked="false"/>
+
+</selector>
+```
+
+drawable/round_purple_tv_bg.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:shape="rectangle">
+    <solid android:color="@color/purple"/>
+    <corners android:topLeftRadius="5dp"
+        android:topRightRadius="5dp"
+        android:bottomLeftRadius="0dp"
+        android:bottomRightRadius="0dp"/>
+    
+</shape>
+```
+
+layout/titlebar.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_titlebar"
+    android:layout_width="match_parent"
+    android:layout_height="55dp">
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:layout_centerInParent="true"/>
+    <ImageView
+        android:id="@+id/imgv_leftbtn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"/>
+    <ImageView
+        android:id="@+id/imgv_rightbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"/>
+</RelativeLayout>
+```
+
+layout/ activity_lost_find.xml   
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+    <include layout="@layout/titlebar"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            style="@style/textview16sp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="安全号码"
+            android:textColor="@color/purple"/>
+        <TextView
+            android:id="@+id/tv_safephone"
+            style="@style/textview16sp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:textColor="@color/purple"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10.px"
+        android:background="#10000000"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:id="@+id/tv_lostfind_protectstauts"
+            style="@style/textview16sp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="防盗保护是否开启"
+            android:textColor="@color/purple"/>
+        <ToggleButton
+            android:id="@+id/togglebtn_lostfind"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/toggle_btn_bg_selector"
+            android:textOff=""
+            android:textOn=""/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.0px"
+        android:background="#10000000"/>
+    <RelativeLayout
+        android:id="@+id/rl_inter_setup_wizard"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            style="@style/textview16sp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="重新进入设置向导"
+            android:textColor="@color/purple"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/arrow_right"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.0px"
+        android:background="#10000000"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@drawable/round_purple_tv_bg"
+            android:gravity="center"
+            android:text="短信指令功能简介"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="#*alarm*#"
+                android:textColor="@color/purple"/>
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:drawableLeft="@drawable/sim_alarm_icon_small"
+                android:drawablePadding="5dp"
+                android:text="播放报警音乐"
+                android:textColor="@color/purple"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="#*location*#"
+                android:textColor="@color/purple"/>
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:drawableLeft="@drawable/location_icon_small"
+                android:drawablePadding="5dp"
+                android:text="GPS追踪"
+                android:textColor="@color/purple"/>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="#*lockScreen*#"
+                android:textColor="@color/purple"/>
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:drawableLeft="@drawable/lock_screen_icon_small"
+                android:drawablePadding="5dp"
+                android:text="远程锁屏"
+                android:textColor="@color/purple"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:text="#*wipedata*#"
+                android:textColor="@color/purple"/>
+            <TextView
+                style="@style/textview16sp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:drawableLeft="@drawable/delete_data_small"
+                android:drawablePadding="5dp"
+                android:text="运程删除数据"
+                android:textColor="@color/purple"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
+```
+
+LostFindActivity.java 
+```
+public class LostFindActivity extends AppCompatActivity{
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        startSetUp1Activity();
+    }
+
+    private void startSetUp1Activity(){
+        Intent intent = new Intent(LostFindActivity.this,Setup1Activity.class);
+        startActivity(intent);
+        finish();
+    }
+}
+```
+
+drawable/circle_purple.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:shape="oval">
+    <solid android:color="#7D65FC"/>
+</shape>
+```
+
+drawable/circle_white.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:shape="oval">
+    <solid android:color="#FFFFFF"/>
+</shape>
+```
+
+drawable/circle_purple_bg_selector.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_checked="true"  android:drawable="@drawable/circle_purple"/>
+    <item android:state_checked="false"  android:drawable="@drawable/circle_white"/>
+
+</selector>
+```
+
+layout/setup_radiogroup.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RadioGroup
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/rb_first"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:button="@null"
+            android:background="@drawable/circle_purple_bg_selector"/>
+        <RadioButton
+            android:id="@+id/rb_second"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:button="@null"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/circle_purple_bg_selector"/>
+        <RadioButton
+            android:id="@+id/rb_third"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:button="@null"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/circle_purple_bg_selector"/>
+        <RadioButton
+            android:id="@+id/rb_four"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:button="@null"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/circle_purple_bg_selector"/>
+    </RadioGroup>
+
+</LinearLayout>
+```
+
+anim/pre_in.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 显示上一步，上一个页面进来的效果 -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="-100%p" 
+    android:toXDelta="0"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="500"
+    android:repeatCount="0"
+    >
+
+</translate>
+```
+
+anim/pre_out.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 显示上一步，当前页面出去的效果 -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="0" 
+    android:toXDelta="100%p"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="500"
+    android:repeatCount="0"
+    >
+
+</translate>
+```
+
+anim/next_in.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 显示下一步，下一个页面进来的效果 -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="100%p" 
+    android:toXDelta="0"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="500"
+    android:repeatCount="0"
+    >
+
+</translate>
+```
+
+anim/next_out.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 显示下一步，当前页面出去的效果 -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="0" 
+    android:toXDelta="-100%p"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="500"
+    android:repeatCount="0"
+    >
+
+</translate>
+```
+
+BaseSetupActivity.java
+
+```
+public abstract class BaseSetUpActivity extends AppCompatActivity {
+    public SharedPreferences sp;
+    //手势识别类
+    private GestureDetector mGestureDetector;
+    //抽象方法 显示前一屏的activtiy
+    public abstract void showNext();
+    //抽象方法 显示后一
+    public abstract void showPre();
+
+    // 用手势识别器去识别触控事件
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        // 分析手势事件
+        mGestureDetector.onTouchEvent ( event );
+        return super.onTouchEvent ( event );
+    }
+    //开启新的activity并且关闭自己
+    public void startActivityAndFinishSelf(Class<?> cls){
+        Intent intent = new Intent ( this, cls );
+        startActivity ( intent );
+        finish ();
+    }
+    @Override
+    protected void onCreate(Bundle savedInstancesState){
+        super.onCreate ( savedInstancesState );
+        sp = getSharedPreferences ( "config", MODE_PRIVATE );
+        //把设置布局注释掉，布局由具体的子类加载，抽象类不加载
+        //setContentView(R.layout.activity_base_set_up);
+        mGestureDetector = new GestureDetector ( this,new GestureDetector.SimpleOnGestureListener (){
+            // e1 代表手指第一次触摸屏幕的事件
+            // e2 代表手指离开屏幕一瞬间的事件
+            // velocityX 水平方向的速度 单位 pix/s
+            // velocityY 竖直方向的速度
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
+                if (Math.abs ( velocityX )<200){
+                    Toast.makeText ( getApplicationContext (),
+                            "无效动作，移动太慢",Toast.LENGTH_SHORT).show ();
+                    return true;
+                }
+                if ((e2.getRawX() - e1.getRawX ())>200){
+                    // 从左向右滑动屏幕，显示上一个界面
+                    showPre ();
+                    overridePendingTransition ( R.anim.pre_in,
+                            R.anim.pre_out);
+                    return true;
+                }
+                if ((e1.getRawX () - e2.getRawX ())>200){
+                    // 从右向左滑动屏幕，显示下一个界面
+                    showNext ();
+                    overridePendingTransition ( R.anim.next_in,
+                            R.anim.next_out);
+                    return true;
+                }
+                return super.onFling ( e1, e2, velocityX, velocityY );
+            }
+        } );
+    }
+}
+```
+
+activity_setup_1.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="100"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="@color/purple">
+            <ImageView
+                android:id="@+id/imgv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/add"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imgv"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="手机防盗向导"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    style="@style/textview16sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="5dp"
+                    android:drawableTop="@drawable/sim_alarm_icon"
+                    android:gravity="center"
+                    android:text="SIM卡变更报警"
+                    android:textColor="@color/purple"/>
+                <TextView
+                    style="@style/textview16sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="5dp"
+                    android:drawableTop="@drawable/location_icon"
+                    android:gravity="center"
+                    android:text="GPS追踪"
+                    android:textColor="@color/purple"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    style="@style/textview16sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="5dp"
+                    android:drawableTop="@drawable/lock_screen_icon"
+                    android:gravity="center"
+                    android:text="远程锁屏"
+                    android:textColor="@color/purple"/>
+                <TextView
+                    style="@style/textview16sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="5dp"
+                    android:drawableTop="@drawable/delete_data"
+                    android:gravity="center"
+                    android:text="远程删除数据"
+                    android:textColor="@color/purple"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_weight="10"
+        android:background="@color/purple"
+        android:gravity="center">
+        <include layout="@layout/setup_radiogroup"/>
+    </LinearLayout>
+</LinearLayout>
+```
+
+Setup1Activity.java
+```
+public class Setup1Activity extends BaseSetUpActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate ( savedInstanceState );
+        setContentView ( R.layout.activity_setup_1 );
+        ((RadioButton)findViewById ( R.id.rb_first )).setChecked ( true );
+    }
+    @Override
+    public void showNext(){
+        startActivityAndFinishSelf ( Setup2Activity.class );
+    }
+    @Override
+    public void showPre(){
+        Toast.makeText ( this, "当前页面已经是第一页", Toast.LENGTH_LONG ).show ();
+    }
+}
+```
+
+drawable/sim_bind_selector.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/add" android:state_pressed="true"/>
+    <item android:drawable="@drawable/add" android:state_enabled="false"/>
+    <item android:drawable="@drawable/add"/>
+
+</selector>
+```
+
+layout/activity_setup_2.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="100"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="@color/purple">
+            <ImageView
+                android:id="@+id/imgv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/add"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imgv"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="SIM卡绑定"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="4"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical|left"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/recomand_icon"/>
+            <TextView
+                style="@style/textview16sp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:lineSpacingMultiplier="1.5"
+                android:text="绑定SIM卡后，当再次重启手机时，若SIM卡信息发生变化，手机卫士会自动发送报警短信给安全号码！"
+                android:textColor="@color/purple"
+                android:textScaleX="1.1"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center">
+            <Button
+                android:id="@+id/btn_bind_sim"
+                android:layout_width="180dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/sim_bind_selector"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_weight="10"
+        android:background="@color/purple"
+        android:gravity="center">
+        <include layout="@layout/setup_radiogroup"/>
+
+    </LinearLayout>
+</LinearLayout>
+```
+
+Setup2Activity.java
+```
+public class Setup2Activity extends BaseSetUpActivity{
+    @Override
+    public void showNext() {
+         startActivityAndFinishSelf(Setup3Activity.class);
+    }
+
+    @Override
+    public void showPre() {
+        startActivityAndFinishSelf(Setup1Activity.class);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setup_2);
+        //设置第2个圆点的颜色
+        ((RadioButton)findViewById(R.id.rb_second)).setChecked(true);
+    }
+}
+```
+
+layout/activity_setup_3.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="100"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="@color/purple">
+            <ImageView
+                android:id="@+id/imgv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/add"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imgv"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="选择安全联系人"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_margin="15dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/et_inputphone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="5"
+                android:background="@drawable/coner_white_rec"
+                android:drawableLeft="@drawable/contact_et_left_icon"
+                android:hint="请输入安全号码"
+                android:inputType="phone"
+                android:textColorHint="@color/purple"/>
+            <Button
+                android:id="@+id/btn_addcontact"
+                android:layout_width="55dp"
+                android:layout_height="45dp"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/add"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_weight="10"
+        android:background="@color/purple"
+        android:gravity="center">
+        <include layout="@layout/setup_radiogroup"/>
+    </LinearLayout>
+
+</LinearLayout>
+```
+
+Setup3Activity.java
+```
+public class Setup3Activity extends BaseSetUpActivity{
+    @Override
+    public void showNext() {
+        startActivityAndFinishSelf(Setup4Activity.class);
+    }
+
+    @Override
+    public void showPre() {
+        startActivityAndFinishSelf(Setup2Activity.class);
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setup_3);
+        //设置第3个小圆点的颜色
+        ((RadioButton)findViewById(R.id.rb_third)).setChecked(true);
+    }
+}
+
+```
+
+layout/activity_setup_4.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="100"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:background="@color/purple">
+            <ImageView
+                android:id="@+id/imgv"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/add"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imgv"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="恭喜 ！设置完成"
+                android:textColor="@android:color/white"
+                android:textScaleX="1.1"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@android:color/white">
+            <TextView
+                android:id="@+id/tv_setup4_status"
+                style="@style/textview16sp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:drawableLeft="@drawable/security_phone"
+                android:drawablePadding="10dp"
+                android:textColor="@color/purple"/>
+            <ToggleButton
+                android:id="@+id/togglebtn_securityfunction"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="27dp"
+                android:background="@drawable/toggle_btn_bg_selector"
+                android:textOff=""
+                android:textOn=""/>
+
+        </RelativeLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_weight="10"
+        android:background="@color/purple"
+        android:gravity="center">
+        <include layout="@layout/setup_radiogroup"/>
+
+    </LinearLayout>
+
+</LinearLayout>
+```
+
+Setup4Activity.java
+```
+public class Setup4Activity extends BaseSetUpActivity{
+    @Override
+    public void showNext() {
+        startActivityAndFinishSelf(LostFindActivity.class);
+    }
+
+    @Override
+    public void showPre() {
+        startActivityAndFinishSelf(Setup3Activity.class);
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setup_4);
+        //设置第4个小圆点的颜色
+        ((RadioButton)findViewById(R.id.rb_four)).setChecked(true);
+    }
+}
+```
+
+AndroidManifest.xml
+```
+<activity android:name=".m2theftguard.LostFindActivity"/>
+<activity android:name=".m2theftguard.Setup1Activity"/>
+<activity android:name=".m2theftguard.Setup2Activity"/>
+<activity android:name=".m2theftguard.Setup3Activity"/>
+<activity android:name=".m2theftguard.Setup4Activity"/>
+```
+
+## 效果
+
+点击手机防盗按钮，输入密码，进入界面
+
+![1](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805221117.png)
+![2](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805221134.png)
+![3](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805221145.png)
+![4](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805221155.png)
