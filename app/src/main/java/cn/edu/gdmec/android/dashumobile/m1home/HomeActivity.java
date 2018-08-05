@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import cn.edu.gdmec.android.dashumobile.R;
 import cn.edu.gdmec.android.dashumobile.m1home.adapter.HomeAdapter;
+import cn.edu.gdmec.android.dashumobile.m2theftguard.LostFindActivity;
 import cn.edu.gdmec.android.dashumobile.m2theftguard.dialog.InterPasswordDialog;
 import cn.edu.gdmec.android.dashumobile.m2theftguard.dialog.SetUpPasswordDialog;
 import cn.edu.gdmec.android.dashumobile.m2theftguard.utils.MD5Utils;
@@ -108,7 +109,7 @@ public class HomeActivity extends Activity {
                 }else if (password.equals ( MD5Utils.encode ( mInPswdDialog.getPassword () ) )){
                     // 进入防盗主界面
                     mInPswdDialog.dismiss ();
-                    //startActivity ( LostFindActivity.class );
+                    startActivity ( LostFindActivity.class );
                     Toast.makeText ( HomeActivity.this, "可以进入手机防盗模块",Toast.LENGTH_LONG ).show ();
                 }else {
                     // 对话框消失，弹出
@@ -150,5 +151,4 @@ public class HomeActivity extends Activity {
         }
         return true;
     }
-
 }
