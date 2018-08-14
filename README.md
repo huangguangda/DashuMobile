@@ -2295,3 +2295,7 @@ AndroidManifest.xml
 在『选择安全联系人』界面，点击加号可弹出当前设备中的联系人，选择联系人之后，可把联系人的电话记录到安全号码输入框中。
 3.4 重启android模拟器之后，自动发送短信到安全联系人的号码
 ```
+
+## 效果
+
+![40](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180815005133.png)
