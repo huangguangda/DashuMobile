@@ -2264,7 +2264,7 @@ AndroidManifest.xml
 ## 手机防盗界面SIM卡绑定和设置安全联系人的业务逻辑实现
 
 1 SIM卡绑定界面以及sim变更的处理逻辑
-
+```
 1.1 清单文件增加READ_PHONE_STATE权限
 1.2 编写Setup2Activity的逻辑代码
 1.3 在根包(cn.edu.gdmec.mobileguard)上创建App继承于Application
@@ -2272,9 +2272,9 @@ AndroidManifest.xml
 1.5 创建m2theftguard/receiver包，在里面new-other-broadcast receiver名称为 BootCompleteReceiver，创建广播接受者，并编写代码。
 1.6 清单文件配置receiver的信使过滤器，并且配置接受启动消息的权限。
 1.7 清单文件增加SEND_SMS权限
-
+```
 2 设置安全选择联系人
-
+```
 2.1 图片
 2.1.1contact_icon.png
 2.1.2back.png
@@ -2287,10 +2287,11 @@ AndroidManifest.xml
 2.8 创建ContactSelectActivity
 2.9 编写联系人列表布局文件activity_contact_select.xml
 2.10 清单文件增加 READ_CONTACT权限 
-
+```
 3 UI测试点
-
+```
 3.1 不绑定sim无法下一步
 3.2 点击『绑定SIM卡』后出现『SIM卡已绑定』
 在『选择安全联系人』界面，点击加号可弹出当前设备中的联系人，选择联系人之后，可把联系人的电话记录到安全号码输入框中。
 3.4 重启android模拟器之后，自动发送短信到安全联系人的号码
+```
