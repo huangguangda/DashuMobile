@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "cn.edu.gdmec.android.dashumobile"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 22
         versionCode 1
         versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
