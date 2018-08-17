@@ -2260,3 +2260,528 @@ AndroidManifest.xml
 ![2](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805221134.png)
 ![3](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805221145.png)
 ![4](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180805221155.png)
+
+## 手机防盗界面SIM卡绑定和设置安全联系人的业务逻辑实现
+
+1 SIM卡绑定界面以及sim变更的处理逻辑
+```
+1.1 清单文件增加READ_PHONE_STATE权限
+1.2 编写Setup2Activity的逻辑代码
+1.3 在根包(cn.edu.gdmec.mobileguard)上创建App继承于Application
+1.4 清单文件上配置App
+1.5 创建m2theftguard/receiver包，在里面new-other-broadcast receiver名称为 BootCompleteReceiver，创建广播接受者，并编写代码。
+1.6 清单文件配置receiver的信使过滤器，并且配置接受启动消息的权限。
+1.7 清单文件增加SEND_SMS权限
+```
+2 设置安全选择联系人
+```
+2.1 图片
+2.1.1contact_icon.png
+2.1.2back.png
+2.2 编写Setup3Activity
+2.3 编写联系人条目布局文件item_list_contact_select.xml
+2.4 values/style.xml 增加字体样式
+2.5 创建m2theftguard/entity包，创建ContactInfo类
+2.6 在m2theftguard/utils包下面，创建ContactInfoParser类，获取联系人信息。
+2.7 创建m2theftguard/adapter包，创建ContactAdapter类继承于BaseAdapter，联系人列表的适配器
+2.8 创建ContactSelectActivity
+2.9 编写联系人列表布局文件activity_contact_select.xml
+2.10 清单文件增加 READ_CONTACT权限 
+```
+3 UI测试点
+```
+3.1 不绑定sim无法下一步
+3.2 点击『绑定SIM卡』后出现『SIM卡已绑定』
+在『选择安全联系人』界面，点击加号可弹出当前设备中的联系人，选择联系人之后，可把联系人的电话记录到安全号码输入框中。
+3.4 重启android模拟器之后，自动发送短信到安全联系人的号码
+```
+
+## 效果
+
+![40](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180815005133.png)
+
+## 结构图
+
+![32](http://images.cnblogs.com/cnblogs_com/dashucoding/1260072/o_QQ%E6%88%AA%E5%9B%BE20180817152158.png)
+
+清单文件修改
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.edu.gdmec.android.dashumobile">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<!--手机防盗界面SIM卡绑定和设置安全联系人的业务逻辑实现-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".m1home.HomeActivity"></activity>
+        <activity android:name=".m2theftguard.LostFindActivity"/>
+        <activity android:name=".m2theftguard.Setup1Activity"/>
+        <activity android:name=".m2theftguard.Setup2Activity"/>
+        <activity android:name=".m2theftguard.Setup3Activity"/>
+        <activity android:name=".m2theftguard.Setup4Activity"/>
+        <!--手机防盗界面SIM卡绑定和设置安全联系人的业务逻辑实现-->
+        <receiver android:name=".m2theftguard.receiver.BootCompleteReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <activity android:name=".m2theftguard.ContactSelectActivity"></activity>
+    </application>
+
+</manifest>
+```
+
+Setup2Activity.java
+```
+public class Setup2Activity extends BaseSetUpActivity implements View.OnClickListener{
+    private TelephonyManager mTelephonyManager;
+    private Button mBindSIMBtn;
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate ( savedInstanceState );
+        setContentView ( R.layout.activity_setup_2 );
+        // 设置第2个小圆点的颜色
+        ((RadioButton ) findViewById ( R.id.rb_second )).setChecked ( true );
+        //获取电话管理器这个系统服务
+        mTelephonyManager = (TelephonyManager) getSystemService ( TELEPHONY_SERVICE );
+        //找到布局中的『sim卡绑定』按钮
+        mBindSIMBtn = (Button) findViewById ( R.id.btn_bind_sim );
+        mBindSIMBtn.setOnClickListener ( this );
+        if (isBind()){
+            mBindSIMBtn.setEnabled ( false );
+        }else{
+            mBindSIMBtn.setEnabled ( true );
+        }
+    }
+    private boolean isBind(){
+        //sp是父类BaseSetupActivity的属性，是SharedPreference，按ctrl+鼠标左键就能跳转到声明的位置
+        String simString = sp.getString ( "sim", null );
+        if (TextUtils.isEmpty ( simString )){
+            return false;
+        }
+        return true;
+    }
+    @Override
+    public void showNext(){
+        if (!isBind ()){
+            Toast.makeText ( this, "您还没有绑定SIM卡！", Toast.LENGTH_LONG ).show ();
+            return;
+        }
+        startActivityAndFinishSelf ( Setup3Activity.class );
+    }
+    @Override
+    public void showPre(){
+        startActivityAndFinishSelf ( Setup1Activity.class );
+    }
+    @Override
+    public void onClick(View view){
+        switch (view.getId ()){
+            case R.id.btn_bind_sim:
+                // 绑定SIM卡
+                bindSIM();
+                break;
+        }
+    }
+
+    //绑定sim卡
+    private void bindSIM() {
+        if (!isBind ()){
+            //使用电话管理器服务来获取sim卡号
+            @SuppressLint("MissingPermission") String simSerialNumber = mTelephonyManager.getSimSerialNumber ();
+            //存储sim卡号
+            SharedPreferences.Editor edit = sp.edit ();
+            edit.putString ( "sim", simSerialNumber );
+            edit.commit ();
+            Toast.makeText ( this, "SIM卡绑定成功！", Toast.LENGTH_LONG ).show ();
+            mBindSIMBtn.setEnabled ( false );
+        }else{
+            // 已经绑定，提醒用户
+            Toast.makeText ( this, "SIM卡已经绑定！", Toast.LENGTH_LONG ).show ();
+            mBindSIMBtn.setEnabled ( false );
+        }
+    }
+}
+```
+
+App.java
+
+```
+public class App extends Application {
+
+    @Override
+    public void onCreate(){
+        super.onCreate ();
+     /*   //更新apk
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder (  );
+            StrictMode.setVmPolicy ( builder.build () );
+        }*/
+
+        correctSIM();
+    }
+
+    public void correctSIM() {
+        // 检查sim卡是否发生变化
+        SharedPreferences sp = getSharedPreferences ( "config",
+                Context.MODE_PRIVATE);
+        // 获取防盗保护的状态
+        boolean protecting = sp.getBoolean ( "protecting", true );
+        if (protecting){
+            // 得到绑定的sim卡串号
+            String bindsim = sp.getString ( "sim", "" );
+            // 得到手机现在的sim卡串号
+            TelephonyManager tm = (TelephonyManager) getSystemService ( Context.TELEPHONY_SERVICE );
+            // 为了测试在手机序列号上data 已模拟SIM卡被更换的情况
+            String realsim = tm.getSimSerialNumber ();
+            //因为虚拟机无法更换sim卡，所以使用虚拟机测试要有此代码，真机测试要注释这段代码。
+            //realsim="999";
+            //realsim = "999";
+            if (bindsim.equals ( realsim )){
+                Log.i ( "", "sim卡未发生变化，还是您的手机" );
+            }else {
+                Log.i ( "", "SIM卡变化了" );
+                // 由于系统版本的原因，这里的发短信可能与其他手机版本不兼容
+                String safenumber = sp.getString ( "safephone", "" );
+                if (!TextUtils.isEmpty ( safenumber )){
+                    SmsManager smsManager = SmsManager.getDefault ();
+                    smsManager.sendTextMessage(safenumber, null,
+                            "你的亲友手机的SIM卡已经被更换！", null, null);
+                }
+            }
+        }
+    }
+}
+```
+BootCompleteReceiver.java
+```
+public class BootCompleteReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        ((App) (context.getApplicationContext())).correctSIM();
+    }
+}
+```
+Setup3Activity.java
+
+```
+public class Setup3Activity extends BaseSetUpActivity implements View.OnClickListener{
+    private EditText mInputPhone;
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate ( savedInstanceState );
+        setContentView ( R.layout.activity_setup_3 );
+        // 设置第3个小圆点的颜色
+        ((RadioButton )findViewById ( R.id.rb_third )).setChecked ( true );
+
+        //((RadioButton )findViewById ( R.id.rb_third )).setChecked ( true );
+        findViewById ( R.id.btn_addcontact ).setOnClickListener ( this );
+        mInputPhone = (EditText)findViewById ( R.id.et_inputphone );
+        String safephone = sp.getString ( "safephone", null );
+        if (!TextUtils.isEmpty ( safephone )){
+            mInputPhone.setText ( safephone );
+        }
+    }
+    @Override
+    public void showNext(){
+        //判断文本输入框中是否有电话号码
+        String safePhone = mInputPhone.getText ().toString ().trim ();
+        if (TextUtils.isEmpty ( safePhone )){
+            Toast.makeText ( this, "请输入安全号码", Toast.LENGTH_LONG ).show ();
+            return;
+        }
+        SharedPreferences.Editor edit = sp.edit ();
+        edit.putString ( "safephone", safePhone );
+        edit.commit ();
+        startActivityAndFinishSelf ( Setup4Activity.class );
+    }
+    @Override
+    public void showPre(){
+        startActivityAndFinishSelf ( Setup2Activity.class );
+    }
+    @Override
+    public void onClick(View view){
+        switch (view.getId ()){
+            case R.id.btn_addcontact:
+                //启动联系人选择activity并获取返回值
+                startActivityForResult ( new Intent( this,ContactSelectActivity.class ), 0 );
+                break;
+        }
+    }
+    //获取被调用的activity的返回值
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult ( requestCode, resultCode, data );
+        if (data!=null){
+            String phone = data.getStringExtra ( "phone" );
+            mInputPhone.setText ( phone );
+        }
+    }
+}
+```
+item_list_contact_select.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#10000000"
+    android:orientation="vertical">
+    <View
+        android:id="@+id/view1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true"
+        android:layout_margin="15dp"
+        android:background="@drawable/contact_icon"/>
+    <TextView
+        android:id="@+id/tv_name"
+        style="@style/textview16sp"
+        android:layout_alignTop="@+id/view1"
+        android:layout_toRightOf="@+id/view1"
+        android:textColor="@color/purple"/>
+    <TextView
+        android:id="@+id/tv_phone"
+        style="@style/textview14sp"
+        android:layout_toRightOf="@+id/view1"
+        android:layout_below="@+id/tv_name"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/purple"/>
+</RelativeLayout>
+```
+values/style.xml
+```
+<!--TextView 14sp-->
+    <style name="textview14sp" parent="wrapcontent">
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+</resources>
+```
+ContactInfo.java
+```
+public class ContactInfo {
+    public String id;
+    public String name;
+    public String phone;
+}
+```
+
+ContactInfoParser.java
+```
+public class ContactInfoParser {
+    public static List<ContactInfo> getSystemContact(Context context){
+        //获取内容解析者
+        ContentResolver resolver = context.getContentResolver ();
+
+        // 1. 查询raw_contacts表，把联系人的id取出来
+        Uri uri = Uri.parse ( "content://com.android.contacts/raw_contacts" );
+        Uri datauri = Uri.parse ( "content://com.android.contacts/data" );
+        List<ContactInfo> infos = new ArrayList<ContactInfo>(  );
+        Cursor cursor = resolver.query ( uri, new String[]{"contact_id"}, null, null, null );
+        while (cursor.moveToNext ()){
+            String id = cursor.getString ( 0 );
+            if (id != null){
+                System.out.println ("联系人id:"+id);
+                ContactInfo info = new ContactInfo ();
+                info.id = id;
+                // 2. 根据联系人的id，查询data表，把这个id的数据取出来
+                // 系统api 查询data表的时候 不是真正的查询data表 而是查询的data表的视图
+                Cursor dataCursor = resolver.query ( datauri, new String[]{
+                                "data1", "mimetype"},"raw_contact_id=?",
+                        new String[]{id}, null);
+                while (dataCursor.moveToNext ()){
+                    String data1 = dataCursor.getString ( 0 );
+                    String mimetype = dataCursor.getString ( 1 );
+                    if ("vnd.android.cursor.item/name".equals ( mimetype )){
+                        System.out.println ("姓名="+data1);
+                        info.name = data1;
+                    }else if ("vnd.android.cursor.item/phone_v2".equals ( mimetype )){
+                        System.out.print ( "电话="+data1 );
+                        info.phone = data1;
+                    }
+                }
+                //如果姓名和手机都为空，则跳过该条数据
+                if (TextUtils.isEmpty ( info.name ) && TextUtils.isEmpty ( info.phone ))
+                    continue;
+                infos.add ( info );
+                dataCursor.close ();
+            }
+        }
+        cursor.close ();
+        return infos;
+    }
+    public static List<ContactInfo> getSimContacts(Context context) {
+        Uri uri=Uri.parse ( "content://icc/adn" );
+        List<ContactInfo> infos=new ArrayList<ContactInfo> ();
+        Cursor mCursor=context.getContentResolver ().query ( uri, null, null, null, null );
+        if (mCursor != null) {
+            while (mCursor.moveToNext ()) {
+                ContactInfo info=new ContactInfo ();
+                // 取得联系人名字
+                int nameFieldColumnIndex=mCursor.getColumnIndex ( "name" );
+                info.name=mCursor.getString ( nameFieldColumnIndex );
+                // 取得电话号码
+                int numberFieldColumnIndex=mCursor.getColumnIndex ( "number" );
+                info.phone=mCursor.getString ( numberFieldColumnIndex );
+                infos.add ( info );
+            }
+        }
+        mCursor.close ();
+        return infos;
+    }
+}
+```
+
+ContactAdapter.java
+```
+public class ContactAdapter extends BaseAdapter {
+    private List<ContactInfo> contactInfos;
+    private Context context;
+    public ContactAdapter(List<ContactInfo> contactInfos, Context context){
+        super();
+        this.contactInfos = contactInfos;
+        this.context = context;
+    }
+    @Override
+    public int getCount(){
+        return contactInfos.size ();
+    }
+    @Override
+    public Object getItem(int i){
+        return contactInfos.get ( i );
+    }
+    @Override
+    public long getItemId(int i){
+        return i;
+    }
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup){
+        ViewHolder holder = null;
+        if (view == null){
+            view = View.inflate ( context, R.layout.item_list_contact_select, null );
+            holder = new ViewHolder();
+            holder.mNameTV = (TextView)view.findViewById ( R.id.tv_name );
+            holder.mPhoneTV = (TextView)view.findViewById ( R.id.tv_phone );
+            view.setTag ( holder );
+        }else {
+            holder = (ViewHolder)view.getTag ();
+        }
+        holder.mNameTV.setText(contactInfos.get ( i ).name);
+        holder.mPhoneTV.setText(contactInfos.get ( i ).phone);
+        return view;
+    }
+    static class ViewHolder{
+        TextView mNameTV;
+        TextView mPhoneTV;
+    }
+}
+```
+
+ContactSelectActivity.java
+```
+public class ContactSelectActivity extends AppCompatActivity implements View.OnClickListener{
+    private ListView mListView;
+    private ContactAdapter adapter;
+    private List<ContactInfo> systemContacts;
+    Handler mHandler = new Handler(  ){
+        public void handleMessage(android.os.Message msg){
+            switch (msg.what){
+                case 10:
+                    if (systemContacts != null){
+                        adapter = new ContactAdapter ( systemContacts,ContactSelectActivity.this );
+                        mListView.setAdapter ( adapter );
+                    }
+                    break;
+            }
+        };
+    };
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate ( savedInstanceState );
+        setContentView ( R.layout.activity_contact_select );
+        initView();
+    }
+    private void initView(){
+        ((TextView) findViewById ( R.id.tv_title )).setText ( "选择联系人" );
+        //补坑
+        //findViewById ( R.id.rl_titlebar ).setBackgroundColor ( getResources ().getColor ( R.color.bright_purple ) );
+        ImageView mLeftImgv = (ImageView)findViewById ( R.id.imgv_leftbtn );
+        mLeftImgv.setOnClickListener ( this );
+        mLeftImgv.setImageResource ( R.drawable.back );
+        //设置导航栏颜色
+        findViewById ( R.id.rl_titlebar ).setBackgroundColor ( getResources ().getColor ( R.color.purple ) );
+        mListView = (ListView) findViewById ( R.id.lv_contact );
+        new Thread (  ){
+            public void run(){
+                systemContacts = ContactInfoParser.getSystemContact ( ContactSelectActivity.this );
+                systemContacts.addAll ( ContactInfoParser.getSimContacts ( ContactSelectActivity.this ) );
+                mHandler.sendEmptyMessage ( 10 );
+            };
+        }.start ();
+        mListView.setOnItemClickListener ( new AdapterView.OnItemClickListener (){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ContactInfo item=( ContactInfo ) adapter.getItem ( position );
+                Intent intent=new Intent ();
+                intent.putExtra ( "phone", item.phone );
+                //补坑
+                //intent.putExtra ( "name", item.name );
+                setResult ( 0, intent );
+                finish ();
+            }
+        } );
+    }
+    @Override
+    public void onClick(View view){
+        switch (view.getId ()){
+            case R.id.imgv_leftbtn:
+                finish ();
+                break;
+        }
+    }
+}
+```
+activity_contact_select.xml
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/titlebar"/>
+    <ListView
+        android:id="@+id/lv_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#00000000"
+        android:divider="#FFFFFF"
+        android:dividerHeight="1dp"/>
+
+</LinearLayout>
+```
+图片back.png,contact_icon.png,布局activity_contact_select.xml,item_list_contact_select.xml
