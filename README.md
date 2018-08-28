@@ -2785,3 +2785,32 @@ activity_contact_select.xml
 </LinearLayout>
 ```
 图片back.png,contact_icon.png,布局activity_contact_select.xml,item_list_contact_select.xml
+
+## 手机防盗界面完善和短信防盗指令功能实现
+
+1.完善手机防盗设置界面逻辑
+
+- 1.1.编写Setup4Activity.java
+- 1.2.编写LostFindActivity.java
+
+2.编写短信防盗指令功能实现
+
+- 2.1.创建raw资源目录：并把ylzs.mp3粘贴进去
+- 2.2.创建xml资源目录：创建device_admin_sample.xml
+- 2.3.创建m2theftguard/service包，创建GPSLocationService服务
+- 2.4.编写广播接收者
+- 2.4.1.MyDeviceAdminReceiver 成为系统管理器
+- 2.4.2.SmsLostFindReceiver  监听防盗指令短信
+
+3.修改HomeActivity.java激活系统管理器
+
+测试点：
+
+4.1.第一次启动提示『激活此设备管理员』
+
+4.2.再次启动app，进入主界面，选择『手机防盗』，设置密码对话框，输入密码对话框，进入Setup1Activity，左划，进入Setup2Activity，点击『sim卡绑定』按钮，左划，进入Setup3Activity，输入安全联系人电话号码，左划进入Setup4Activity，点击防盗开启的开关按钮，点击后出现，『防盗没有开启』和『防盗已经开启』
+
+4.3.再次启动app，进入『手机防盗』，输入密码后，出现『防盗保护已开启』，点击『重新进入向导』，出现『手机防盗向导』
+
+
+
